@@ -172,7 +172,10 @@ export async function createClientProjectAction(formData: FormData) {
     .eq('workspace_id', workspaceId)
 
   if (admins) {
-    const adminIds = admins.filter(a => a.profiles?.role === 'admin' || a.profiles?.role === 'staff').map(a => a.user_id)
+    const adminIds = admins.filter(a => {
+      const profile = Array.isArray(a.profiles) ? a.profiles[0] : a.profiles as any;
+      return profile?.role === 'admin' || profile?.role === 'staff';
+    }).map(a => a.user_id)
     
     // Create notifications for each admin
     const notifications = adminIds.map(adminId => ({
